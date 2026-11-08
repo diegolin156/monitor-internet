@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070d17">
+<title>Network Monitor — Continuous</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header>
+  <div>
+    <div class="eyebrow">NETWORK MONITOR / LIVE</div>
+    <h1>Monitor de conexión</h1>
+    <p>Medición continua, rápida y de bajo impacto para monitorear una transmisión.</p>
+  </div>
+  <div class="actions">
+    <label>Perfil
+      <select id="profile">
+        <option value="stream" selected>Streaming</option>
+        <option value="balanced">Balanceado</option>
+        <option value="light">Ligero</option>
+      </select>
+    </label>
+    <button id="toggle" class="start">INICIAR</button>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="live"><span id="dot"></span><div><b id="runState">DETENIDO</b><small id="runDetail">Sin mediciones activas</small></div></div>
+  <div class="health"><small>SALUD</small><strong id="score">—</strong><span id="scoreText">Esperando datos</span></div>
+  <div class="health"><small>EVENTOS CRÍTICOS</small><strong id="critical">0</strong><span>últimos 60 s</span></div>
+  <div class="health"><small>TRÁFICO DEL MONITOR</small><strong id="traffic">0 MB</strong><span id="trafficRate">— MB/min</span></div>
+</section>
+
+<section class="metrics">
+  <article class="card" id="cLatency"><header><span>LATENCIA</span><em id="sLatency">—</em></header><strong><span id="latency">—</span><small>ms</small></strong><footer><span>avg <b id="latAvg">—</b></span><span>p95 <b id="latP95">—</b></span></footer></article>
+  <article class="card" id="cJitter"><header><span>JITTER</span><em id="sJitter">—</em></header><strong><span id="jitter">—</span><small>ms</small></strong><footer><span>avg <b id="jitAvg">—</b></span><span>max <b id="jitMax">—</b></span></footer></article>
+  <article class="card" id="cLoss"><header><span>PÉRDIDA DE SONDA</span><em id="sLoss">—</em></header><strong><span id="loss">—</span><small>%</small></strong><footer><span>ok <b id="ok">—</b></span><span>fallos <b id="fail">—</b></span></footer></article>
+  <article class="card" id="cDown"><header><span>DOWNLOAD</span><em id="sDown">—</em></header><strong><span id="down">—</span><small>Mbps</small></strong><footer><span>p50 <b id="downP50">—</b></span><span>último <b id="downLast">—</b></span></footer></article>
+  <article class="card" id="cUp"><header><span>UPLOAD</span><em id="sUp">—</em></header><strong><span id="up">—</span><small>Mbps</small></strong><footer><span>p50 <b id="upP50">—</b></span><span>último <b id="upLast">—</b></span></footer></article>
+  <article class="card" id="cHead"><header><span>MARGEN PARA OBS</span><em id="sHead">—</em></header><strong><span id="head">—</span><small>×</small></strong><footer><span>bitrate <b id="brText">6000</b></span><span>objetivo <b id="marginText">1.8×</b></span></footer></article>
+</section>
+
+<section class="stream">
+  <div><b>Configuración de transmisión</b><p>El margen se calcula contra el upload observado. No realiza una prueba pesada permanente.</p></div>
+  <label>Bitrate OBS <div><input id="bitrate" type="number" min="100" step="100" value="6000"><span>kbps</span></div></label>
+  <label>Margen <div><input id="margin" type="number" min="1" max="5" step=".1" value="1.8"><span>×</span></div></label>
+</section>
+
+<section class="panel graph">
+  <div class="panelhead"><div><b>SEÑAL EN VIVO</b><p>Ventana móvil de 60 segundos · actualización inmediata.</p></div><div class="legend"><i class="ping"></i> ping <i class="up"></i> upload <i class="down"></i> download</div></div>
+  <canvas id="chart"></canvas>
+</section>
+
+<section class="bottom">
+  <div class="panel">
+    <div class="panelhead"><div><b>ESTABILIDAD</b><p>Comportamiento de los últimos 60 segundos.</p></div></div>
+    <div class="stability">
+      <div><span>Latencia mínima</span><b id="latMin">—</b></div>
+      <div><span>Latencia máxima</span><b id="latMax">—</b></div>
+      <div><span>Jitter máximo</span><b id="jitMax2">—</b></div>
+      <div><span>Upload p95</span><b id="upP95">—</b></div>
+      <div><span>Sondas</span><b id="samples">—</b></div>
+      <div><span>Tiempo activo</span><b id="uptime">00:00</b></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panelhead"><div><b>EVENTOS EN TIEMPO REAL</b><p>Se registra cada degradación relevante.</p></div><button id="clear">Limpiar</button></div>
+    <div id="log" class="log"></div>
+  </div>
+</section>
+
+<section class="note">
+<b>Importante:</b> la sonda continua es HTTP, no ICMP. Download/upload son micropruebas activas y generan tráfico. El navegador no puede inspeccionar directamente los paquetes de OBS. Para medición de capa de red real haría falta un agente local.
+</section>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>
